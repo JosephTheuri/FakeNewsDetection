@@ -19,31 +19,40 @@ class TrainModel():
         models = []
         dfs = []
 
+        # Create a list of possible test models
         models.append(("PassiveAggressive", PassiveAggressiveClassifier(max_iter=50)))
         models.append(("LogisticRegression", LogisticRegression()))
-        # models.append(("SVC", SVC()))
-        # models.append(("KNeighbors", KNeighborsClassifier()))
-        # models.append(("DecisionTree", DecisionTreeClassifier()))
+        models.append(("SVC", SVC()))
+        models.append(("KNeighbors", KNeighborsClassifier()))
+        models.append(("DecisionTree", DecisionTreeClassifier()))
         models.append(("RandomForest", RandomForestClassifier()))
 
-        results = []
-        names = []
+        # Train Models on training data to find best model
         scoring = ['accuracy', 'precision_weighted', 'recall_weighted', 'f1_weighted', 'roc_auc']
         target_names = ['Real', 'Fake']
         for name, model in models:
+            print(name)
             kfold = model_selection.KFold(n_splits=5, shuffle=True, random_state=123)
             cv_results = model_selection.cross_validate(model, self.train, self.y_train, cv=kfold, scoring=scoring)
-            clf = model.fit(self.train, self.y_train)
-            y_pred = clf.predict(self.test)
-            print(name)
-            print(classification_report(self.y_test, y_pred, target_names=target_names))
-            
-            results.append(cv_results)
-            names.append(name)
-            this_df = pd.DataFrame(cv_results)
+            cv_mean = pd.DataFrame(cv_results).mean()
+            this_df = cv_mean
             this_df['model'] = name
             dfs.append(this_df)
+
+        train = pd.concat(dfs, ignore_index=True, axis=1).transpose()
+        train.to_csv('src\\modelling\\train_results.csv', index=False)
+
+        # Test Final Model Model
+        top_model = [y for x,y in models if x == train['model'][0]][0]
+        print("Top Model:", top_model)
+        clf = top_model.fit(self.train, self.y_train)
+        y_pred = clf.predict(self.test)
+        report = classification_report(self.y_test, y_pred, target_names=target_names, output_dict=True)
+        final = pd.DataFrame(report).transpose()
+
+        final.to_csv('src\\modelling\\final_results.csv', index=False)
+            
+            # results.append(report)
+            # names.append(name)
         
-        final = pd.concat(dfs, ignore_index=True)
-        final.to_csv('src\\modelling\\train_results.csv', index=False)
-        return final
+        return report

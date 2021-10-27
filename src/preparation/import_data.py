@@ -14,8 +14,14 @@ class ImportData():
         df = self.read_csv()
 
         # Remove rows with missing text values
-        df = df[df['text'].notna()]
-        return df
+        df_no_na = df[df['text'].notna()]
+        print('Null rows removed:', len(df)-len(df_no_na))
+        
+        # Drop duplicates
+        df_no_duplicates = df_no_na.drop_duplicates(subset='Text')
+        print('Duplicates removed:', len(df)-len(df_no_duplicates))
+
+        return df_no_duplicates
 
     # Print pandas properties
     def print_pstats(self):
