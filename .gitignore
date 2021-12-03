@@ -1,3 +1,5 @@
 /test
-/notebook
+/notebook/
 /data
+debug*.py
+*.csv

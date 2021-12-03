@@ -7,6 +7,10 @@ name = "pypi"
 pandas = "*"
 sklearn = "*"
 textblob = "*"
+imblearn = "*"
+dash = "*"
+plotly = "*"
+numpy = "*"
 
 [dev-packages]
 
