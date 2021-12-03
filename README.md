@@ -29,6 +29,7 @@ You will also need to download and install the following:
 
 The file structure is the following
 
+```bash
 src .
     |
     +-- main.py
@@ -49,6 +50,7 @@ src .
                     |   +-- home.py 
                     |   +-- predict.py
                     |   +-- results.py
+```
 
 # File descriptions
 
